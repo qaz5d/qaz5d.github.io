@@ -18,6 +18,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
     <meta property="og:title" content="芽芽的晴天小屋">
     <meta property="og:description" content="摸摸芽芽、喂点心、换配饰，一起来玩颜色记忆小游戏。">
     <meta property="og:url" content="https://qaz5d.github.io/">
+    <meta property="og:image" content="https://qaz5d.github.io/assets/yaya-character.png">
     <title>芽芽的晴天小屋</title>
     <style>
       :root {
@@ -147,7 +148,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         position: relative;
         display: grid;
         width: min(390px, 90vw);
-        aspect-ratio: 1 / 0.94;
+        aspect-ratio: 0.82;
         place-items: center;
         margin: 4px 0 -4px;
       }
@@ -203,10 +204,14 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       }
 
       .character {
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-        filter: drop-shadow(0 17px 12px rgb(67 88 147 / 14%));
+        display: block;
+        width: auto;
+        max-width: 88%;
+        height: 96%;
+        border-radius: 0;
+        object-fit: contain;
+        object-position: center;
+        filter: drop-shadow(0 18px 15px rgb(67 88 147 / 21%));
         animation: float 3.4s ease-in-out infinite;
         transform-origin: 50% 77%;
       }
@@ -219,19 +224,43 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         animation: munch 980ms ease-in-out both;
       }
 
-      .character.is-eating .mouth-calm,
-      .character.is-eating .mouth-happy,
-      .character.is-eating .mouth-sleepy,
-      .character.is-eating .mouth-wow,
-      .character.is-eating .mouth-love {
-        display: none;
+      .character-cue {
+        position: absolute;
+        z-index: 2;
+        top: 37%;
+        left: 7%;
+        display: grid;
+        width: clamp(48px, 13vw, 62px);
+        aspect-ratio: 1;
+        place-items: center;
+        border: 2px solid rgb(255 255 255 / 90%);
+        border-radius: 50% 50% 50% 15%;
+        background: #fff;
+        box-shadow: 0 9px 20px rgb(50 67 119 / 19%);
+        font-size: clamp(25px, 7vw, 34px);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(.45) rotate(-12deg);
       }
 
-      .character.is-eating .mouth-bite {
-        display: inline;
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: chew 260ms ease-in-out 3;
+      .character-cue.is-visible {
+        animation: cue-pop 380ms cubic-bezier(.16, 1, .3, 1) both;
+      }
+
+      .character-accessory {
+        position: absolute;
+        z-index: 2;
+        top: 17%;
+        left: 54%;
+        font-size: clamp(29px, 8vw, 40px);
+        line-height: 1;
+        pointer-events: none;
+        filter: drop-shadow(0 4px 4px rgb(48 42 75 / 25%));
+        transform: translateX(-50%) rotate(9deg);
+      }
+
+      .character-accessory[hidden] {
+        display: none;
       }
 
       .food-flight {
@@ -246,62 +275,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         line-height: 1;
         filter: drop-shadow(0 4px 3px rgb(49 62 100 / 18%));
         will-change: transform, opacity;
-      }
-
-      .blink {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: blink 5s ease-in-out infinite;
-      }
-
-      .mood-happy,
-      .mood-sleepy,
-      .mood-wow,
-      .mood-love {
-        display: none;
-      }
-
-      .mouth-calm,
-      .mouth-happy,
-      .mouth-sleepy,
-      .mouth-wow,
-      .mouth-love,
-      .mouth-bite {
-        display: none;
-      }
-
-      .character[data-mood="calm"] .mouth-calm,
-      .character[data-mood="happy"] .mouth-happy,
-      .character[data-mood="sleepy"] .mouth-sleepy,
-      .character[data-mood="wow"] .mouth-wow,
-      .character[data-mood="love"] .mouth-love {
-        display: inline;
-      }
-
-      .character[data-mood="happy"] .mood-happy,
-      .character[data-mood="sleepy"] .mood-sleepy,
-      .character[data-mood="wow"] .mood-wow,
-      .character[data-mood="love"] .mood-love {
-        display: inline;
-      }
-
-      .character[data-mood="sleepy"] .blink,
-      .character[data-mood="wow"] .blink,
-      .character[data-mood="love"] .blink,
-      .character[data-mood="happy"] .blink {
-        display: none;
-      }
-
-      .character[data-accessory="bow"] .accessory-bow,
-      .character[data-accessory="flower"] .accessory-flower,
-      .character[data-accessory="crown"] .accessory-crown {
-        display: inline;
-      }
-
-      .accessory-bow,
-      .accessory-flower,
-      .accessory-crown {
-        display: none;
       }
 
       .message {
@@ -503,157 +476,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         padding-top: 4px;
       }
 
-      .chat-log {
-        display: flex;
-        max-height: 310px;
-        min-height: 112px;
-        flex-direction: column;
-        gap: 10px;
-        overflow-y: auto;
-        padding: 14px;
-        border: 1px solid rgb(76 101 163 / 14%);
-        border-radius: 18px;
-        background: rgb(255 255 255 / 58%);
-        scroll-behavior: smooth;
-      }
-
-      .chat-message {
-        max-width: min(86%, 430px);
-        padding: 10px 14px;
-        border-radius: 16px 16px 16px 5px;
-        background: #fff;
-        box-shadow: 0 4px 12px rgb(70 92 146 / 7%);
-        color: var(--ink);
-        font-size: 0.9rem;
-        line-height: 1.55;
-        overflow-wrap: anywhere;
-        white-space: pre-wrap;
-      }
-
-      .chat-message--user {
-        align-self: flex-end;
-        border-radius: 16px 16px 5px 16px;
-        background: #e5ebff;
-      }
-
-      .chat-message--error {
-        border: 1px solid #f0c5b8;
-        background: #fff7f2;
-        color: #8a463b;
-      }
-
-      .chat-message--pending {
-        color: var(--muted);
-      }
-
-      .chat-form {
-        display: flex;
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .chat-key-form {
-        display: flex;
-        gap: 9px;
-        margin-top: 13px;
-        padding: 12px;
-        border: 1px solid rgb(76 101 163 / 14%);
-        border-radius: 16px;
-        background: rgb(255 255 255 / 58%);
-      }
-
-      .chat-key-form[hidden] {
-        display: none;
-      }
-
-      .chat-key-input {
-        width: 100%;
-        min-width: 0;
-        min-height: 42px;
-        padding: 9px 12px;
-        border: 1px solid rgb(76 101 163 / 20%);
-        border-radius: 12px;
-        background: white;
-        color: var(--ink);
-        font: inherit;
-        font-size: 0.86rem;
-      }
-
-      .chat-key-input:focus-visible {
-        border-color: var(--blue);
-        outline: 3px solid rgb(85 120 238 / 22%);
-        outline-offset: 1px;
-      }
-
-      .chat-key-button {
-        flex: 0 0 auto;
-        min-height: 42px;
-        padding: 0 14px;
-        border: 0;
-        border-radius: 12px;
-        background: #e7edff;
-        color: #344fae;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 750;
-      }
-
-      .chat-key-button:disabled {
-        cursor: wait;
-        opacity: .62;
-      }
-
-      .chat-input {
-        width: 100%;
-        min-width: 0;
-        min-height: 48px;
-        padding: 11px 15px;
-        border: 1px solid rgb(76 101 163 / 20%);
-        border-radius: 15px;
-        background: rgb(255 255 255 / 88%);
-        color: var(--ink);
-        font: inherit;
-        font-size: 0.92rem;
-      }
-
-      .chat-input::placeholder {
-        color: #687997;
-      }
-
-      .chat-input:focus-visible {
-        border-color: var(--blue);
-        outline: 3px solid rgb(85 120 238 / 22%);
-        outline-offset: 1px;
-      }
-
-      .chat-send {
-        flex: 0 0 auto;
-        min-width: 78px;
-        min-height: 48px;
-        padding: 0 17px;
-        border: 0;
-        border-radius: 15px;
-        background: var(--blue);
-        color: white;
-        cursor: pointer;
-        font-weight: 750;
-      }
-
-      .chat-send:hover:not(:disabled) {
-        background: var(--blue-deep);
-      }
-
-      .chat-send:disabled {
-        cursor: wait;
-        opacity: .62;
-      }
-
-      .chat-hint {
-        margin: 9px 0 0 !important;
-        color: var(--muted);
-        font-size: 0.77rem !important;
-      }
-
       .sr-only {
         position: absolute;
         width: 1px;
@@ -693,11 +515,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         50% { transform: translateY(-9px) rotate(1deg); }
       }
 
-      @keyframes blink {
-        0%, 42%, 46%, 100% { transform: scaleY(1); }
-        44% { transform: scaleY(0.08); }
-      }
-
       @keyframes dance {
         0% { transform: rotate(0) scale(1, 1); }
         18% { transform: rotate(-11deg) scale(.94, 1.04); }
@@ -713,9 +530,10 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         38%, 78% { transform: translateY(-2px) rotate(2deg) scale(.99, 1.015); }
       }
 
-      @keyframes chew {
-        0%, 100% { transform: scaleY(.72); }
-        50% { transform: scaleY(1.18); }
+      @keyframes cue-pop {
+        0% { opacity: 0; transform: scale(.45) rotate(-12deg); }
+        72% { opacity: 1; transform: scale(1.12) rotate(5deg); }
+        100% { opacity: 1; transform: scale(1) rotate(0); }
       }
 
       @keyframes twinkle {
@@ -786,27 +604,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
           grid-column: auto;
         }
 
-        .chat-section {
-          grid-column: auto;
-        }
-
-        .chat-form {
-          gap: 8px;
-        }
-
-        .chat-key-form {
-          padding: 9px;
-        }
-
-        .chat-key-button {
-          padding: 0 10px;
-        }
-
-        .chat-send {
-          min-width: 68px;
-          padding: 0 12px;
-        }
-
         .mood-button {
           width: 48px;
           height: 48px;
@@ -850,126 +647,9 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         <div class="orbit" aria-hidden="true"></div>
         <span class="burst" id="burst" aria-hidden="true">耶！</span>
         <button class="character-button" id="characterButton" type="button" aria-label="摸摸芽芽的头">
-          <svg class="character" id="character" data-mood="calm" viewBox="0 0 360 350" role="img" aria-labelledby="characterTitle characterDescription">
-            <title id="characterTitle">芽芽</title>
-            <desc id="characterDescription">一只戴着小芽发饰、圆滚滚的蓝色小伙伴。</desc>
-            <defs>
-              <linearGradient id="bodyColor" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#83a7ff"/>
-                <stop offset="1" stop-color="#5578ee"/>
-              </linearGradient>
-              <linearGradient id="bellyColor" x1="0" y1="0" x2="0.8" y2="1">
-                <stop offset="0" stop-color="#fffdf7"/>
-                <stop offset="1" stop-color="#fff1d8"/>
-              </linearGradient>
-              <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%">
-                <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#425ba8" flood-opacity=".18"/>
-              </filter>
-            </defs>
-
-            <g class="character-art">
-              <ellipse cx="180" cy="309" rx="91" ry="16" fill="#7e9bda" opacity=".17"/>
-
-              <g class="arms" fill="none" stroke="#4567d4" stroke-width="8" stroke-linecap="round">
-                <path d="M97 201c-21 7-32 25-28 42 3 12 14 17 24 10"/>
-                <path d="M263 201c21 7 32 25 28 42-3 12-14 17-24 10"/>
-              </g>
-
-              <g filter="url(#softShadow)">
-                <path d="M128 77c-1-32 8-52 22-54 20-3 34 28 33 58z" fill="#7092ef" stroke="#405fcb" stroke-width="5"/>
-                <path d="M231 77c2-32-7-52-21-54-20-3-35 28-34 58z" fill="#7092ef" stroke="#405fcb" stroke-width="5"/>
-                <path d="M137 68c1-18 5-29 11-30 8-1 17 13 19 32z" fill="#ffb6a3"/>
-                <path d="M222 68c-1-18-5-29-11-30-8-1-17 13-19 32z" fill="#ffb6a3"/>
-
-                <path d="M103 169c0-57 31-92 77-92s77 35 77 92v84c0 31-28 50-77 50s-77-19-77-50z"
-                  fill="url(#bodyColor)" stroke="#405fcb" stroke-width="6"/>
-                <path d="M128 229c2-28 19-43 52-43s50 15 52 43v18c0 20-19 31-52 31s-52-11-52-31z"
-                  fill="url(#bellyColor)" stroke="#4567d4" stroke-width="4"/>
-
-                <path d="M136 90c13-9 28-13 44-13" fill="none" stroke="#c5d5ff" stroke-width="7" stroke-linecap="round" opacity=".8"/>
-
-                <g class="blink" fill="#283858">
-                  <ellipse cx="151" cy="161" rx="8" ry="13"/>
-                  <ellipse cx="209" cy="161" rx="8" ry="13"/>
-                  <circle cx="154" cy="156" r="2.5" fill="#fff"/>
-                  <circle cx="212" cy="156" r="2.5" fill="#fff"/>
-                </g>
-
-                <g class="mood-happy" fill="none" stroke="#283858" stroke-width="5" stroke-linecap="round">
-                  <path d="M140 164q11-15 22 0"/>
-                  <path d="M198 164q11-15 22 0"/>
-                </g>
-                <g class="mood-sleepy" fill="none" stroke="#283858" stroke-width="5" stroke-linecap="round">
-                  <path d="M140 165h22"/>
-                  <path d="M198 165h22"/>
-                </g>
-                <g class="mood-wow">
-                  <ellipse cx="151" cy="161" rx="9" ry="13" fill="#283858"/>
-                  <ellipse cx="209" cy="161" rx="9" ry="13" fill="#283858"/>
-                  <circle cx="154" cy="156" r="2.5" fill="#fff"/>
-                  <circle cx="212" cy="156" r="2.5" fill="#fff"/>
-                </g>
-                <g class="mood-love">
-                  <path d="M151 170c-17-11-13-25-3-25 5 0 8 4 9 8 2-4 5-8 10-8 10 0 14 14-3 25l-6 4z" fill="#ff7185"/>
-                  <path d="M209 170c-17-11-13-25-3-25 5 0 8 4 9 8 2-4 5-8 10-8 10 0 14 14-3 25l-6 4z" fill="#ff7185"/>
-                </g>
-
-                <ellipse cx="127" cy="186" rx="13" ry="7" fill="#ff9f93" opacity=".82"/>
-                <ellipse cx="233" cy="186" rx="13" ry="7" fill="#ff9f93" opacity=".82"/>
-
-                <g class="mouth-calm" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
-                  <path d="M171 177q9 8 18 0"/>
-                </g>
-                <g class="mouth-happy" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
-                  <path d="M167 177q13 16 26 0"/>
-                </g>
-                <g class="mouth-sleepy" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
-                  <path d="M171 180q9-5 18 0"/>
-                </g>
-                <g class="mouth-wow">
-                  <ellipse cx="180" cy="179" rx="7" ry="10" fill="#283858"/>
-                </g>
-                <g class="mouth-love" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
-                  <path d="M169 178q11 13 22 0"/>
-                </g>
-                <g class="mouth-bite" fill="#283858">
-                  <ellipse cx="180" cy="179" rx="9" ry="11"/>
-                  <path d="M173 184q7 5 14 0" fill="none" stroke="#ff9b82" stroke-width="2" stroke-linecap="round"/>
-                </g>
-
-                <g fill="#263d7c" opacity=".7">
-                  <circle cx="160" cy="222" r="3"/>
-                  <circle cx="180" cy="215" r="3"/>
-                  <circle cx="200" cy="222" r="3"/>
-                </g>
-
-                <path d="M157 291c-15 8-20 17-19 23 1 7 17 10 42 10s41-3 42-10c1-6-4-15-19-23z"
-                  fill="#ffdc7f" stroke="#e2a942" stroke-width="5"/>
-                <path d="M179 291c-11-16-5-29 7-31 13-2 18 12 10 26 13-12 26-8 25 3-2 12-23 17-42 2z"
-                  fill="#9be5d0" stroke="#428f81" stroke-width="4" stroke-linejoin="round"/>
-                <path d="M188 284c4-8 10-12 17-13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".75"/>
-              </g>
-
-              <g class="accessory-bow" stroke="#a44781" stroke-width="3" stroke-linejoin="round">
-                <path d="M232 105c-17-16-31-9-27 3 3 9 15 9 27 2z" fill="#ff9bcb"/>
-                <path d="M232 105c17-16 31-9 27 3-3 9-15 9-27 2z" fill="#ff9bcb"/>
-                <circle cx="232" cy="106" r="5" fill="#ffd878"/>
-              </g>
-              <g class="accessory-flower" stroke="#db7a67" stroke-width="2">
-                <path d="M243 97c-8-8 4-14 8-5 5-9 16-3 9 5 10 2 7 14-3 11-3 10-15 7-12-3-10 2-12-7-2-8z" fill="#ffb6a3"/>
-                <circle cx="252" cy="103" r="4" fill="#ffd878"/>
-              </g>
-              <g class="accessory-crown" stroke="#b57a18" stroke-width="3" stroke-linejoin="round">
-                <path d="M143 89l4-18 15 12 13-22 14 22 15-12 5 18z" fill="#ffd878"/>
-                <circle cx="178" cy="74" r="3" fill="#ff9b82" stroke="none"/>
-              </g>
-
-              <g class="mood-sparkle" fill="#ffcb57">
-                <path d="M91 127l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/>
-                <path d="M266 119l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#ff9b82"/>
-              </g>
-            </g>
-          </svg>
+          <img class="character" id="character" src="assets/yaya-character.png" alt="芽芽的透明背景角色立绘">
+          <span class="character-cue" id="characterCue" aria-hidden="true"></span>
+          <span class="character-accessory" id="characterAccessory" aria-hidden="true" hidden></span>
         </button>
       </div>
 
@@ -1037,6 +717,8 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       const danceButton = document.querySelector("#danceButton");
       const message = document.querySelector("#message");
       const burst = document.querySelector("#burst");
+      const characterCue = document.querySelector("#characterCue");
+      const characterAccessory = document.querySelector("#characterAccessory");
       const moodButtons = [...document.querySelectorAll(".mood-button")];
       const snackButtons = [...document.querySelectorAll(".snack-button")];
       const accessoryButtons = [...document.querySelectorAll(".accessory-button")];
@@ -1059,9 +741,25 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         wow: "哇！有什么新发现吗？",
         sleepy: "哈欠……再陪芽芽玩一会儿嘛",
       };
+      const moodEmojis = {
+        calm: "🙂",
+        happy: "😄",
+        love: "😍",
+        wow: "😮",
+        sleepy: "😴",
+      };
+      const accessoryEmojis = {
+        bow: "🎀",
+        flower: "🌼",
+        crown: "👑",
+      };
 
       function setMood(mood) {
         character.dataset.mood = mood;
+        characterCue.textContent = moodEmojis[mood];
+        characterCue.classList.remove("is-visible");
+        void characterCue.offsetWidth;
+        characterCue.classList.add("is-visible");
         message.textContent = moodMessages[mood];
         for (const button of moodButtons) {
           button.setAttribute("aria-pressed", String(button.dataset.mood === mood));
@@ -1225,6 +923,9 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       for (const button of accessoryButtons) {
         button.addEventListener("click", () => {
           character.dataset.accessory = button.dataset.accessory;
+          const emoji = accessoryEmojis[button.dataset.accessory];
+          characterAccessory.textContent = emoji || "";
+          characterAccessory.hidden = !emoji;
           for (const option of accessoryButtons) {
             option.setAttribute("aria-pressed", String(option === button));
           }
