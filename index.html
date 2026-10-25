@@ -1,0 +1,1246 @@
+<!doctype html>
+<!--
+THESIS: A friendly original mascot gets the whole stage; no dashboard or feature-card frame.
+OWN-WORLD: A bright sky-blue and apricot character world, drawn as clean, layered vector shapes with tiny star confetti.
+STORY: Meet Yaya, change her mood, feed her, dress her up, and play a color-memory game.
+FIRST VIEWPORT: The greeting sits above one oversized central character; expression controls and the tap action sit directly beneath, with more play and chat below.
+FORM: A mascot-centered experience with expressive states, feeding, dress-up, and a repeatable memory game.
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f7ff">
+    <meta name="description" content="来芽芽的晴天小屋，摸摸可爱的原创角色、喂她点心、换上小配饰，再挑战颜色记忆小游戏。">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://qaz5d.github.io/yaya-sunny-cottage/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="芽芽的晴天小屋">
+    <meta property="og:description" content="摸摸芽芽、喂点心、换配饰，一起来玩颜色记忆小游戏。">
+    <meta property="og:url" content="https://qaz5d.github.io/yaya-sunny-cottage/">
+    <title>芽芽的晴天小屋</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #26365a;
+        --muted: #667797;
+        --blue: #5578ee;
+        --blue-deep: #3f5ed2;
+        --sky: #dceaff;
+        --peach: #ff9b82;
+        --butter: #ffd878;
+        --mint: #9be5d0;
+        --paper: #f3f7ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse at 50% 41%, #ffffff 0 10%, #edf4ff 42%, transparent 69%),
+          linear-gradient(150deg, #f8f9ff 0%, #e9f2ff 55%, #fff0e9 100%);
+        font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .scene {
+        position: relative;
+        display: flex;
+        min-height: 100svh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 42px 20px 30px;
+        isolation: isolate;
+      }
+
+      .scene::before,
+      .scene::after {
+        position: absolute;
+        z-index: -1;
+        content: "";
+        pointer-events: none;
+      }
+
+      .scene::before {
+        inset: 18px;
+        border: 1px solid rgb(86 120 238 / 12%);
+        border-radius: 48% 52% 46% 54% / 3% 3% 3% 3%;
+      }
+
+      .scene::after {
+        top: 13%;
+        left: 50%;
+        width: min(74vw, 740px);
+        aspect-ratio: 1;
+        border: 1px dashed rgb(85 120 238 / 15%);
+        border-radius: 50%;
+        transform: translateX(-50%);
+      }
+
+      .sparkle {
+        position: absolute;
+        z-index: -1;
+        color: #f2b84b;
+        font-size: 22px;
+        animation: twinkle 3.2s ease-in-out infinite;
+        user-select: none;
+      }
+
+      .sparkle--one {
+        top: 20%;
+        left: calc(50% - 245px);
+      }
+
+      .sparkle--two {
+        top: 31%;
+        right: calc(50% - 252px);
+        color: #ee927d;
+        font-size: 15px;
+        animation-delay: -1.1s;
+      }
+
+      .sparkle--three {
+        right: calc(50% - 198px);
+        bottom: 20%;
+        font-size: 18px;
+        animation-delay: -2s;
+      }
+
+      .intro {
+        z-index: 1;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3.35rem);
+        font-weight: 850;
+        letter-spacing: -0.055em;
+        line-height: 1.08;
+        font-family: "Trebuchet MS", "Microsoft YaHei", sans-serif;
+      }
+
+      h1 span {
+        color: var(--blue);
+      }
+
+      .intro p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        letter-spacing: 0.04em;
+      }
+
+      .character-stage {
+        position: relative;
+        display: grid;
+        width: min(390px, 90vw);
+        aspect-ratio: 1 / 0.94;
+        place-items: center;
+        margin: 4px 0 -4px;
+      }
+
+      .halo {
+        position: absolute;
+        width: 80%;
+        aspect-ratio: 1;
+        border: 1px solid rgb(89 125 225 / 13%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgb(255 255 255 / 88%) 0 39%, rgb(214 231 255 / 52%) 68%, transparent 69%);
+        box-shadow: 0 28px 64px rgb(91 120 186 / 12%);
+      }
+
+      .orbit {
+        position: absolute;
+        width: 93%;
+        height: 44%;
+        border: 1px solid rgb(117 143 207 / 17%);
+        border-radius: 50%;
+        transform: rotate(-13deg);
+      }
+
+      .orbit::after {
+        position: absolute;
+        top: 11%;
+        right: 13%;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--peach);
+        box-shadow: 0 3px 10px rgb(223 113 91 / 27%);
+        content: "";
+      }
+
+      .character-button {
+        position: relative;
+        z-index: 1;
+        width: 90%;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .character-button:focus-visible,
+      .mood-button:focus-visible,
+      .dance-button:focus-visible {
+        outline: 3px solid #344fb8;
+        outline-offset: 5px;
+      }
+
+      .character {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        filter: drop-shadow(0 17px 12px rgb(67 88 147 / 14%));
+        animation: float 3.4s ease-in-out infinite;
+        transform-origin: 50% 77%;
+      }
+
+      .character.is-dancing {
+        animation: dance 680ms cubic-bezier(.22, 1, .36, 1);
+      }
+
+      .character.is-eating {
+        animation: munch 980ms ease-in-out both;
+      }
+
+      .character.is-eating .mouth-calm,
+      .character.is-eating .mouth-happy,
+      .character.is-eating .mouth-sleepy,
+      .character.is-eating .mouth-wow,
+      .character.is-eating .mouth-love {
+        display: none;
+      }
+
+      .character.is-eating .mouth-bite {
+        display: inline;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: chew 260ms ease-in-out 3;
+      }
+
+      .food-flight {
+        position: fixed;
+        z-index: 20;
+        display: grid;
+        width: 72px;
+        height: 72px;
+        place-items: center;
+        pointer-events: none;
+        font-size: 56px;
+        line-height: 1;
+        filter: drop-shadow(0 4px 3px rgb(49 62 100 / 18%));
+        will-change: transform, opacity;
+      }
+
+      .blink {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: blink 5s ease-in-out infinite;
+      }
+
+      .mood-happy,
+      .mood-sleepy,
+      .mood-wow,
+      .mood-love {
+        display: none;
+      }
+
+      .mouth-calm,
+      .mouth-happy,
+      .mouth-sleepy,
+      .mouth-wow,
+      .mouth-love,
+      .mouth-bite {
+        display: none;
+      }
+
+      .character[data-mood="calm"] .mouth-calm,
+      .character[data-mood="happy"] .mouth-happy,
+      .character[data-mood="sleepy"] .mouth-sleepy,
+      .character[data-mood="wow"] .mouth-wow,
+      .character[data-mood="love"] .mouth-love {
+        display: inline;
+      }
+
+      .character[data-mood="happy"] .mood-happy,
+      .character[data-mood="sleepy"] .mood-sleepy,
+      .character[data-mood="wow"] .mood-wow,
+      .character[data-mood="love"] .mood-love {
+        display: inline;
+      }
+
+      .character[data-mood="sleepy"] .blink,
+      .character[data-mood="wow"] .blink,
+      .character[data-mood="love"] .blink,
+      .character[data-mood="happy"] .blink {
+        display: none;
+      }
+
+      .character[data-accessory="bow"] .accessory-bow,
+      .character[data-accessory="flower"] .accessory-flower,
+      .character[data-accessory="crown"] .accessory-crown {
+        display: inline;
+      }
+
+      .accessory-bow,
+      .accessory-flower,
+      .accessory-crown {
+        display: none;
+      }
+
+      .message {
+        min-height: 28px;
+        margin: -2px 0 14px;
+        color: var(--muted);
+        font-size: 0.94rem;
+        text-align: center;
+      }
+
+      .mood-picker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .mood-button {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        border: 1px solid rgb(76 101 163 / 12%);
+        border-radius: 18px;
+        background: rgb(255 255 255 / 76%);
+        box-shadow: 0 5px 14px rgb(70 92 146 / 7%);
+        cursor: pointer;
+        font-size: 22px;
+        transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      }
+
+      .mood-button:hover {
+        transform: translateY(-3px) rotate(-4deg);
+      }
+
+      .mood-button[aria-pressed="true"] {
+        border-color: #6682ed;
+        background: #e3eaff;
+        box-shadow: 0 5px 14px rgb(76 103 210 / 17%);
+        transform: translateY(-2px);
+      }
+
+      .dance-button {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 18px;
+        padding: 0 23px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--blue);
+        box-shadow: 0 7px 0 var(--blue-deep), 0 13px 24px rgb(72 99 205 / 22%);
+        color: white;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 750;
+        transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+      }
+
+      .dance-button:hover {
+        background: #6382f0;
+        transform: translateY(-2px);
+        box-shadow: 0 9px 0 var(--blue-deep), 0 16px 26px rgb(72 99 205 / 22%);
+      }
+
+      .dance-button:active {
+        transform: translateY(4px);
+        box-shadow: 0 3px 0 var(--blue-deep), 0 7px 14px rgb(72 99 205 / 16%);
+      }
+
+      .playground {
+        display: grid;
+        width: min(600px, 100%);
+        grid-template-columns: 1fr 1fr;
+        gap: 26px 38px;
+        margin-top: 46px;
+        padding: 28px 0 0;
+        border-top: 1px solid rgb(76 101 163 / 15%);
+      }
+
+      .play-section h2 {
+        margin: 0 0 13px;
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .play-section p {
+        margin: -4px 0 13px;
+        color: var(--muted);
+        font-size: 0.83rem;
+        line-height: 1.55;
+      }
+
+      .choice-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .choice-button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 13px;
+        border: 1px solid rgb(76 101 163 / 16%);
+        border-radius: 14px;
+        background: rgb(255 255 255 / 76%);
+        box-shadow: 0 4px 12px rgb(70 92 146 / 6%);
+        cursor: pointer;
+        font-size: 0.87rem;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+      }
+
+      .choice-button:hover {
+        border-color: #9aacee;
+        background: #fff;
+        transform: translateY(-2px);
+      }
+
+      .choice-button[aria-pressed="true"] {
+        border-color: #6682ed;
+        background: #e7edff;
+      }
+
+      .choice-button:focus-visible,
+      .memory-button:focus-visible,
+      .memory-start:focus-visible {
+        outline: 3px solid #344fb8;
+        outline-offset: 3px;
+      }
+
+      .memory-section {
+        grid-column: 1 / -1;
+        padding-top: 4px;
+      }
+
+      .memory-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .memory-button {
+        width: 44px;
+        height: 44px;
+        border: 3px solid rgb(38 54 90 / 8%);
+        border-radius: 50%;
+        cursor: pointer;
+        opacity: 0.84;
+        transition: transform 160ms ease, opacity 160ms ease, filter 160ms ease;
+      }
+
+      .memory-button:hover:not(:disabled) {
+        opacity: 1;
+        transform: scale(1.08);
+      }
+
+      .memory-button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      .memory-button.is-lit {
+        opacity: 1;
+        filter: brightness(1.28) saturate(1.2);
+        transform: scale(1.15);
+      }
+
+      .memory-button[data-color="pink"] { background: #ff8fa3; }
+      .memory-button[data-color="yellow"] { background: #ffc94d; }
+      .memory-button[data-color="mint"] { background: #65cdb0; }
+      .memory-button[data-color="blue"] { background: #6d8cff; }
+
+      .memory-start {
+        min-height: 42px;
+        margin-left: 6px;
+        padding: 0 15px;
+        border: 0;
+        border-radius: 999px;
+        background: #e7edff;
+        color: #344fae;
+        cursor: pointer;
+        font-size: 0.86rem;
+        font-weight: 750;
+      }
+
+      .memory-status {
+        min-height: 22px;
+        margin: 11px 0 0 !important;
+      }
+
+      .chat-section {
+        grid-column: 1 / -1;
+        padding-top: 4px;
+      }
+
+      .chat-log {
+        display: flex;
+        max-height: 310px;
+        min-height: 112px;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: auto;
+        padding: 14px;
+        border: 1px solid rgb(76 101 163 / 14%);
+        border-radius: 18px;
+        background: rgb(255 255 255 / 58%);
+        scroll-behavior: smooth;
+      }
+
+      .chat-message {
+        max-width: min(86%, 430px);
+        padding: 10px 14px;
+        border-radius: 16px 16px 16px 5px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgb(70 92 146 / 7%);
+        color: var(--ink);
+        font-size: 0.9rem;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+
+      .chat-message--user {
+        align-self: flex-end;
+        border-radius: 16px 16px 5px 16px;
+        background: #e5ebff;
+      }
+
+      .chat-message--error {
+        border: 1px solid #f0c5b8;
+        background: #fff7f2;
+        color: #8a463b;
+      }
+
+      .chat-message--pending {
+        color: var(--muted);
+      }
+
+      .chat-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .chat-key-form {
+        display: flex;
+        gap: 9px;
+        margin-top: 13px;
+        padding: 12px;
+        border: 1px solid rgb(76 101 163 / 14%);
+        border-radius: 16px;
+        background: rgb(255 255 255 / 58%);
+      }
+
+      .chat-key-form[hidden] {
+        display: none;
+      }
+
+      .chat-key-input {
+        width: 100%;
+        min-width: 0;
+        min-height: 42px;
+        padding: 9px 12px;
+        border: 1px solid rgb(76 101 163 / 20%);
+        border-radius: 12px;
+        background: white;
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.86rem;
+      }
+
+      .chat-key-input:focus-visible {
+        border-color: var(--blue);
+        outline: 3px solid rgb(85 120 238 / 22%);
+        outline-offset: 1px;
+      }
+
+      .chat-key-button {
+        flex: 0 0 auto;
+        min-height: 42px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 12px;
+        background: #e7edff;
+        color: #344fae;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 750;
+      }
+
+      .chat-key-button:disabled {
+        cursor: wait;
+        opacity: .62;
+      }
+
+      .chat-input {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        padding: 11px 15px;
+        border: 1px solid rgb(76 101 163 / 20%);
+        border-radius: 15px;
+        background: rgb(255 255 255 / 88%);
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.92rem;
+      }
+
+      .chat-input::placeholder {
+        color: #687997;
+      }
+
+      .chat-input:focus-visible {
+        border-color: var(--blue);
+        outline: 3px solid rgb(85 120 238 / 22%);
+        outline-offset: 1px;
+      }
+
+      .chat-send {
+        flex: 0 0 auto;
+        min-width: 78px;
+        min-height: 48px;
+        padding: 0 17px;
+        border: 0;
+        border-radius: 15px;
+        background: var(--blue);
+        color: white;
+        cursor: pointer;
+        font-weight: 750;
+      }
+
+      .chat-send:hover:not(:disabled) {
+        background: var(--blue-deep);
+      }
+
+      .chat-send:disabled {
+        cursor: wait;
+        opacity: .62;
+      }
+
+      .chat-hint {
+        margin: 9px 0 0 !important;
+        color: var(--muted);
+        font-size: 0.77rem !important;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      .footnote {
+        margin: 27px 0 0;
+        color: #7a89a6;
+        font-size: 0.78rem;
+        letter-spacing: 0.07em;
+      }
+
+      .burst {
+        position: absolute;
+        z-index: 2;
+        top: 12%;
+        right: 8%;
+        color: #e87562;
+        font-size: clamp(1.4rem, 5vw, 2.2rem);
+        font-weight: 900;
+        opacity: 0;
+        pointer-events: none;
+        transform: rotate(12deg) scale(0.4);
+      }
+
+      .burst.is-visible {
+        animation: pop 700ms ease-out both;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(-1deg); }
+        50% { transform: translateY(-9px) rotate(1deg); }
+      }
+
+      @keyframes blink {
+        0%, 42%, 46%, 100% { transform: scaleY(1); }
+        44% { transform: scaleY(0.08); }
+      }
+
+      @keyframes dance {
+        0% { transform: rotate(0) scale(1, 1); }
+        18% { transform: rotate(-11deg) scale(.94, 1.04); }
+        38% { transform: rotate(12deg) scale(1.04, .94); }
+        58% { transform: rotate(-8deg) scale(.96, 1.05); }
+        78% { transform: rotate(7deg) scale(1.03, .97); }
+        100% { transform: rotate(0) scale(1, 1); }
+      }
+
+      @keyframes munch {
+        0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+        18%, 58% { transform: translateY(3px) rotate(-2deg) scale(1.015, .985); }
+        38%, 78% { transform: translateY(-2px) rotate(2deg) scale(.99, 1.015); }
+      }
+
+      @keyframes chew {
+        0%, 100% { transform: scaleY(.72); }
+        50% { transform: scaleY(1.18); }
+      }
+
+      @keyframes twinkle {
+        0%, 100% { opacity: .45; transform: scale(.8) rotate(0); }
+        50% { opacity: 1; transform: scale(1.15) rotate(18deg); }
+      }
+
+      @keyframes pop {
+        0% { opacity: 0; transform: rotate(12deg) scale(.4); }
+        28% { opacity: 1; transform: rotate(-9deg) scale(1.12); }
+        72% { opacity: 1; transform: rotate(7deg) scale(1); }
+        100% { opacity: 0; transform: rotate(12deg) scale(.8) translateY(-17px); }
+      }
+
+      @media (max-height: 720px) and (min-width: 600px) {
+        .scene {
+          padding-top: 24px;
+          padding-bottom: 18px;
+        }
+
+        .character-stage {
+          width: min(320px, 42vh);
+        }
+
+        .footnote {
+          margin-top: 18px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .scene {
+          min-height: 100svh;
+          padding: 34px 18px 24px;
+        }
+
+        .scene::before {
+          inset: 10px;
+        }
+
+        .scene::after {
+          top: 23%;
+          width: min(97vw, calc(100vw - 36px));
+        }
+
+        .intro p {
+          margin-top: 9px;
+          font-size: 0.92rem;
+        }
+
+        .character-stage {
+          width: min(355px, 94vw);
+          margin-top: 12px;
+          margin-bottom: -10px;
+        }
+
+        .mood-picker {
+          gap: 9px;
+        }
+
+        .playground {
+          grid-template-columns: 1fr;
+          gap: 23px;
+          margin-top: 37px;
+          padding-top: 23px;
+        }
+
+        .memory-section {
+          grid-column: auto;
+        }
+
+        .chat-section {
+          grid-column: auto;
+        }
+
+        .chat-form {
+          gap: 8px;
+        }
+
+        .chat-key-form {
+          padding: 9px;
+        }
+
+        .chat-key-button {
+          padding: 0 10px;
+        }
+
+        .chat-send {
+          min-width: 68px;
+          padding: 0 12px;
+        }
+
+        .mood-button {
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+        }
+
+        .sparkle--one {
+          left: 9%;
+        }
+
+        .sparkle--two {
+          right: 8%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="scene">
+      <span class="sparkle sparkle--one" aria-hidden="true">✦</span>
+      <span class="sparkle sparkle--two" aria-hidden="true">✧</span>
+      <span class="sparkle sparkle--three" aria-hidden="true">✦</span>
+
+      <header class="intro">
+        <h1>你好，我是<span>芽芽</span></h1>
+        <p>今天也想和你一起玩一会儿</p>
+      </header>
+
+      <div class="character-stage">
+        <div class="halo" aria-hidden="true"></div>
+        <div class="orbit" aria-hidden="true"></div>
+        <span class="burst" id="burst" aria-hidden="true">耶！</span>
+        <button class="character-button" id="characterButton" type="button" aria-label="摸摸芽芽的头">
+          <svg class="character" id="character" data-mood="calm" viewBox="0 0 360 350" role="img" aria-labelledby="characterTitle characterDescription">
+            <title id="characterTitle">芽芽</title>
+            <desc id="characterDescription">一只戴着小芽发饰、圆滚滚的蓝色小伙伴。</desc>
+            <defs>
+              <linearGradient id="bodyColor" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#83a7ff"/>
+                <stop offset="1" stop-color="#5578ee"/>
+              </linearGradient>
+              <linearGradient id="bellyColor" x1="0" y1="0" x2="0.8" y2="1">
+                <stop offset="0" stop-color="#fffdf7"/>
+                <stop offset="1" stop-color="#fff1d8"/>
+              </linearGradient>
+              <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%">
+                <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#425ba8" flood-opacity=".18"/>
+              </filter>
+            </defs>
+
+            <g class="character-art">
+              <ellipse cx="180" cy="309" rx="91" ry="16" fill="#7e9bda" opacity=".17"/>
+
+              <g class="arms" fill="none" stroke="#4567d4" stroke-width="8" stroke-linecap="round">
+                <path d="M97 201c-21 7-32 25-28 42 3 12 14 17 24 10"/>
+                <path d="M263 201c21 7 32 25 28 42-3 12-14 17-24 10"/>
+              </g>
+
+              <g filter="url(#softShadow)">
+                <path d="M128 77c-1-32 8-52 22-54 20-3 34 28 33 58z" fill="#7092ef" stroke="#405fcb" stroke-width="5"/>
+                <path d="M231 77c2-32-7-52-21-54-20-3-35 28-34 58z" fill="#7092ef" stroke="#405fcb" stroke-width="5"/>
+                <path d="M137 68c1-18 5-29 11-30 8-1 17 13 19 32z" fill="#ffb6a3"/>
+                <path d="M222 68c-1-18-5-29-11-30-8-1-17 13-19 32z" fill="#ffb6a3"/>
+
+                <path d="M103 169c0-57 31-92 77-92s77 35 77 92v84c0 31-28 50-77 50s-77-19-77-50z"
+                  fill="url(#bodyColor)" stroke="#405fcb" stroke-width="6"/>
+                <path d="M128 229c2-28 19-43 52-43s50 15 52 43v18c0 20-19 31-52 31s-52-11-52-31z"
+                  fill="url(#bellyColor)" stroke="#4567d4" stroke-width="4"/>
+
+                <path d="M136 90c13-9 28-13 44-13" fill="none" stroke="#c5d5ff" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+
+                <g class="blink" fill="#283858">
+                  <ellipse cx="151" cy="161" rx="8" ry="13"/>
+                  <ellipse cx="209" cy="161" rx="8" ry="13"/>
+                  <circle cx="154" cy="156" r="2.5" fill="#fff"/>
+                  <circle cx="212" cy="156" r="2.5" fill="#fff"/>
+                </g>
+
+                <g class="mood-happy" fill="none" stroke="#283858" stroke-width="5" stroke-linecap="round">
+                  <path d="M140 164q11-15 22 0"/>
+                  <path d="M198 164q11-15 22 0"/>
+                </g>
+                <g class="mood-sleepy" fill="none" stroke="#283858" stroke-width="5" stroke-linecap="round">
+                  <path d="M140 165h22"/>
+                  <path d="M198 165h22"/>
+                </g>
+                <g class="mood-wow">
+                  <ellipse cx="151" cy="161" rx="9" ry="13" fill="#283858"/>
+                  <ellipse cx="209" cy="161" rx="9" ry="13" fill="#283858"/>
+                  <circle cx="154" cy="156" r="2.5" fill="#fff"/>
+                  <circle cx="212" cy="156" r="2.5" fill="#fff"/>
+                </g>
+                <g class="mood-love">
+                  <path d="M151 170c-17-11-13-25-3-25 5 0 8 4 9 8 2-4 5-8 10-8 10 0 14 14-3 25l-6 4z" fill="#ff7185"/>
+                  <path d="M209 170c-17-11-13-25-3-25 5 0 8 4 9 8 2-4 5-8 10-8 10 0 14 14-3 25l-6 4z" fill="#ff7185"/>
+                </g>
+
+                <ellipse cx="127" cy="186" rx="13" ry="7" fill="#ff9f93" opacity=".82"/>
+                <ellipse cx="233" cy="186" rx="13" ry="7" fill="#ff9f93" opacity=".82"/>
+
+                <g class="mouth-calm" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
+                  <path d="M171 177q9 8 18 0"/>
+                </g>
+                <g class="mouth-happy" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
+                  <path d="M167 177q13 16 26 0"/>
+                </g>
+                <g class="mouth-sleepy" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
+                  <path d="M171 180q9-5 18 0"/>
+                </g>
+                <g class="mouth-wow">
+                  <ellipse cx="180" cy="179" rx="7" ry="10" fill="#283858"/>
+                </g>
+                <g class="mouth-love" fill="none" stroke="#283858" stroke-width="4" stroke-linecap="round">
+                  <path d="M169 178q11 13 22 0"/>
+                </g>
+                <g class="mouth-bite" fill="#283858">
+                  <ellipse cx="180" cy="179" rx="9" ry="11"/>
+                  <path d="M173 184q7 5 14 0" fill="none" stroke="#ff9b82" stroke-width="2" stroke-linecap="round"/>
+                </g>
+
+                <g fill="#263d7c" opacity=".7">
+                  <circle cx="160" cy="222" r="3"/>
+                  <circle cx="180" cy="215" r="3"/>
+                  <circle cx="200" cy="222" r="3"/>
+                </g>
+
+                <path d="M157 291c-15 8-20 17-19 23 1 7 17 10 42 10s41-3 42-10c1-6-4-15-19-23z"
+                  fill="#ffdc7f" stroke="#e2a942" stroke-width="5"/>
+                <path d="M179 291c-11-16-5-29 7-31 13-2 18 12 10 26 13-12 26-8 25 3-2 12-23 17-42 2z"
+                  fill="#9be5d0" stroke="#428f81" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M188 284c4-8 10-12 17-13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+              </g>
+
+              <g class="accessory-bow" stroke="#a44781" stroke-width="3" stroke-linejoin="round">
+                <path d="M232 105c-17-16-31-9-27 3 3 9 15 9 27 2z" fill="#ff9bcb"/>
+                <path d="M232 105c17-16 31-9 27 3-3 9-15 9-27 2z" fill="#ff9bcb"/>
+                <circle cx="232" cy="106" r="5" fill="#ffd878"/>
+              </g>
+              <g class="accessory-flower" stroke="#db7a67" stroke-width="2">
+                <path d="M243 97c-8-8 4-14 8-5 5-9 16-3 9 5 10 2 7 14-3 11-3 10-15 7-12-3-10 2-12-7-2-8z" fill="#ffb6a3"/>
+                <circle cx="252" cy="103" r="4" fill="#ffd878"/>
+              </g>
+              <g class="accessory-crown" stroke="#b57a18" stroke-width="3" stroke-linejoin="round">
+                <path d="M143 89l4-18 15 12 13-22 14 22 15-12 5 18z" fill="#ffd878"/>
+                <circle cx="178" cy="74" r="3" fill="#ff9b82" stroke="none"/>
+              </g>
+
+              <g class="mood-sparkle" fill="#ffcb57">
+                <path d="M91 127l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/>
+                <path d="M266 119l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#ff9b82"/>
+              </g>
+            </g>
+          </svg>
+        </button>
+      </div>
+
+      <p class="message" id="message" aria-live="polite">点一点下面的表情，看看芽芽的心情</p>
+
+      <div class="mood-picker" role="group" aria-label="选择芽芽的表情">
+        <button class="mood-button" type="button" data-mood="calm" aria-label="平静" aria-pressed="true">🙂</button>
+        <button class="mood-button" type="button" data-mood="happy" aria-label="开心" aria-pressed="false">😄</button>
+        <button class="mood-button" type="button" data-mood="love" aria-label="喜欢" aria-pressed="false">😍</button>
+        <button class="mood-button" type="button" data-mood="wow" aria-label="惊喜" aria-pressed="false">😮</button>
+        <button class="mood-button" type="button" data-mood="sleepy" aria-label="困倦" aria-pressed="false">😴</button>
+      </div>
+
+      <button class="dance-button" id="danceButton" type="button">
+        <span aria-hidden="true">✦</span> 摸摸芽芽的头
+      </button>
+
+      <div class="playground">
+        <section class="play-section" aria-labelledby="snackTitle">
+          <h2 id="snackTitle">给芽芽带点好吃的</h2>
+          <p>选一份小点心，看看她最喜欢哪种。</p>
+          <div class="choice-row" role="group" aria-label="选择点心">
+            <button class="choice-button snack-button" type="button" data-snack="草莓" data-emoji="🍓">🍓 草莓</button>
+            <button class="choice-button snack-button" type="button" data-snack="牛奶" data-emoji="🥛">🥛 牛奶</button>
+            <button class="choice-button snack-button" type="button" data-snack="小饼干" data-emoji="🍪">🍪 饼干</button>
+          </div>
+        </section>
+
+        <section class="play-section" aria-labelledby="accessoryTitle">
+          <h2 id="accessoryTitle">今天戴哪一款？</h2>
+          <p>给芽芽换个小配饰吧。</p>
+          <div class="choice-row" role="group" aria-label="选择配饰">
+            <button class="choice-button accessory-button" type="button" data-accessory="none" aria-pressed="true">🌱 原本的</button>
+            <button class="choice-button accessory-button" type="button" data-accessory="bow" data-label="蝴蝶结" aria-pressed="false">🎀 蝴蝶结</button>
+            <button class="choice-button accessory-button" type="button" data-accessory="flower" data-label="小花" aria-pressed="false">🌼 小花</button>
+            <button class="choice-button accessory-button" type="button" data-accessory="crown" data-label="皇冠" aria-pressed="false">👑 皇冠</button>
+          </div>
+        </section>
+
+        <section class="play-section memory-section" aria-labelledby="memoryTitle">
+          <h2 id="memoryTitle">芽芽的颜色记忆</h2>
+          <p>记住亮起的顺序，再按相同的颜色。每过一关，顺序会多一个。</p>
+          <div class="memory-row" role="group" aria-label="颜色按钮">
+            <button class="memory-button" type="button" data-index="0" data-color="pink" aria-label="粉色" disabled></button>
+            <button class="memory-button" type="button" data-index="1" data-color="yellow" aria-label="黄色" disabled></button>
+            <button class="memory-button" type="button" data-index="2" data-color="mint" aria-label="绿色" disabled></button>
+            <button class="memory-button" type="button" data-index="3" data-color="blue" aria-label="蓝色" disabled></button>
+            <button class="memory-start" id="memoryStart" type="button">开始游戏</button>
+          </div>
+          <p class="memory-status" id="memoryStatus" aria-live="polite">准备好就开始吧！</p>
+        </section>
+
+        <section class="play-section chat-section" aria-labelledby="chatTitle">
+          <h2 id="chatTitle">给芽芽留句话</h2>
+          <p>这个公开互动版暂不提供 AI 聊天；喂食和小游戏都可以直接玩。</p>
+        </section>
+      </div>
+
+      <p class="footnote">芽芽 · 你的晴天小伙伴</p>
+    </main>
+
+    <script>
+      const character = document.querySelector("#character");
+      const characterButton = document.querySelector("#characterButton");
+      const danceButton = document.querySelector("#danceButton");
+      const message = document.querySelector("#message");
+      const burst = document.querySelector("#burst");
+      const moodButtons = [...document.querySelectorAll(".mood-button")];
+      const snackButtons = [...document.querySelectorAll(".snack-button")];
+      const accessoryButtons = [...document.querySelectorAll(".accessory-button")];
+      const memoryButtons = [...document.querySelectorAll(".memory-button")];
+      const memoryStart = document.querySelector("#memoryStart");
+      const memoryStatus = document.querySelector("#memoryStatus");
+      let danceTimer;
+      let burstTimer;
+      let eatingTimer;
+      let foodFlight;
+      let flyingFood;
+      let memorySequence = [];
+      let memoryInputIndex = 0;
+      let memoryState = "idle";
+      let memoryTimers = [];
+      const moodMessages = {
+        calm: "点一点下面的表情，看看芽芽的心情",
+        happy: "芽芽今天超开心！",
+        love: "芽芽把爱心送给你",
+        wow: "哇！有什么新发现吗？",
+        sleepy: "哈欠……再陪芽芽玩一会儿嘛",
+      };
+
+      function setMood(mood) {
+        character.dataset.mood = mood;
+        message.textContent = moodMessages[mood];
+        for (const button of moodButtons) {
+          button.setAttribute("aria-pressed", String(button.dataset.mood === mood));
+        }
+      }
+
+      function cheer() {
+        clearTimeout(eatingTimer);
+        foodFlight?.cancel();
+        flyingFood?.remove();
+        foodFlight = null;
+        flyingFood = null;
+        character.classList.remove("is-eating");
+        character.classList.remove("is-dancing");
+        burst.classList.remove("is-visible");
+        void character.getBoundingClientRect();
+        character.classList.add("is-dancing");
+        burst.classList.add("is-visible");
+        message.textContent = "嘿嘿，好喜欢你的摸摸！";
+        clearTimeout(danceTimer);
+        clearTimeout(burstTimer);
+        danceTimer = setTimeout(() => character.classList.remove("is-dancing"), 720);
+        burstTimer = setTimeout(() => burst.classList.remove("is-visible"), 760);
+      }
+
+      function feed(snack, emoji, button) {
+        clearTimeout(eatingTimer);
+        clearTimeout(danceTimer);
+        clearTimeout(burstTimer);
+        foodFlight?.cancel();
+        flyingFood?.remove();
+        character.classList.remove("is-dancing", "is-eating");
+        burst.classList.remove("is-visible");
+        void character.getBoundingClientRect();
+
+        const buttonRect = button.getBoundingClientRect();
+        const characterRect = character.getBoundingClientRect();
+        const startX = buttonRect.left + buttonRect.width / 2;
+        const startY = buttonRect.top + buttonRect.height / 2;
+        const endX = characterRect.left + characterRect.width / 2;
+        const endY = characterRect.top + characterRect.height * (179 / 350);
+        const food = document.createElement("span");
+        food.className = "food-flight";
+        food.setAttribute("aria-hidden", "true");
+        food.textContent = emoji;
+        food.style.left = `${startX - 36}px`;
+        food.style.top = `${startY - 36}px`;
+        document.body.append(food);
+
+        flyingFood = food;
+        setMood("happy");
+        message.textContent = `芽芽看到${snack}啦！`;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const flightDuration = reduceMotion ? 1 : 1800;
+        foodFlight = food.animate(
+          [
+            { transform: "translate(0, 0) scale(.72) rotate(-12deg)", opacity: 0 },
+            { transform: `translate(${(endX - startX) * 0.46}px, ${(endY - startY) * 0.38 - 50}px) scale(1.48) rotate(16deg)`, opacity: 1, offset: .55 },
+            { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(.42) rotate(28deg)`, opacity: 0 },
+          ],
+          { duration: flightDuration, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
+        );
+
+        foodFlight.onfinish = () => {
+          food.remove();
+          if (flyingFood === food) flyingFood = null;
+          if (foodFlight?.effect?.target === food) foodFlight = null;
+          character.classList.remove("is-dancing");
+          character.classList.add("is-eating");
+          message.textContent = `芽芽开心地吃掉了${snack} ${emoji}`;
+          burst.textContent = "好吃！";
+          burst.classList.add("is-visible");
+          clearTimeout(burstTimer);
+          burstTimer = setTimeout(() => {
+            burst.classList.remove("is-visible");
+            burst.textContent = "耶！";
+          }, 760);
+          eatingTimer = setTimeout(() => character.classList.remove("is-eating"), 1000);
+        };
+
+        foodFlight.oncancel = () => {
+          food.remove();
+          if (flyingFood === food) flyingFood = null;
+        };
+      }
+
+      function clearMemoryTimers() {
+        for (const timer of memoryTimers) clearTimeout(timer);
+        memoryTimers = [];
+      }
+
+      function lightMemoryButton(index, duration = 360) {
+        const button = memoryButtons[index];
+        button.classList.add("is-lit");
+        const timer = setTimeout(() => button.classList.remove("is-lit"), duration);
+        memoryTimers.push(timer);
+      }
+
+      function playMemorySequence() {
+        memoryState = "playing";
+        memoryInputIndex = 0;
+        memoryButtons.forEach((button) => { button.disabled = true; });
+        memoryStatus.textContent = "看仔细哦，芽芽要开始啦！";
+
+        memorySequence.forEach((index, position) => {
+          const timer = setTimeout(() => {
+            lightMemoryButton(index, 360);
+            if (position === memorySequence.length - 1) {
+              const readyTimer = setTimeout(() => {
+                memoryState = "input";
+                memoryButtons.forEach((button) => { button.disabled = false; });
+                memoryStatus.textContent = "轮到你啦，按顺序点颜色！";
+              }, 460);
+              memoryTimers.push(readyTimer);
+            }
+          }, 600 + position * 620);
+          memoryTimers.push(timer);
+        });
+      }
+
+      function startMemoryGame() {
+        clearMemoryTimers();
+        memorySequence = [Math.floor(Math.random() * memoryButtons.length)];
+        memoryStart.textContent = "重新开始";
+        playMemorySequence();
+      }
+
+      function pressMemoryButton(index) {
+        if (memoryState !== "input") return;
+        lightMemoryButton(index, 220);
+
+        if (memorySequence[memoryInputIndex] !== index) {
+          memoryState = "idle";
+          memoryButtons.forEach((button) => { button.disabled = true; });
+          memoryStatus.textContent = `差一点点！你记住了 ${memoryInputIndex} 个颜色，再试一次吧。`;
+          return;
+        }
+
+        memoryInputIndex += 1;
+        if (memoryInputIndex === memorySequence.length) {
+          memoryState = "playing";
+          memoryButtons.forEach((button) => { button.disabled = true; });
+          memoryStatus.textContent = `答对啦！第 ${memorySequence.length} 关完成。`;
+          const nextRoundTimer = setTimeout(() => {
+            memorySequence.push(Math.floor(Math.random() * memoryButtons.length));
+            playMemorySequence();
+          }, 850);
+          memoryTimers.push(nextRoundTimer);
+        }
+      }
+
+      for (const button of moodButtons) {
+        button.addEventListener("click", () => setMood(button.dataset.mood));
+      }
+
+      for (const button of snackButtons) {
+        button.addEventListener("click", () => feed(button.dataset.snack, button.dataset.emoji, button));
+      }
+
+      for (const button of accessoryButtons) {
+        button.addEventListener("click", () => {
+          character.dataset.accessory = button.dataset.accessory;
+          for (const option of accessoryButtons) {
+            option.setAttribute("aria-pressed", String(option === button));
+          }
+          message.textContent = button.dataset.accessory === "none"
+            ? "芽芽戴回了自己喜欢的小叶子"
+            : `芽芽戴上了${button.dataset.label}，好看吗？`;
+        });
+      }
+
+      memoryStart.addEventListener("click", startMemoryGame);
+      for (const button of memoryButtons) {
+        button.addEventListener("click", () => pressMemoryButton(Number(button.dataset.index)));
+      }
+
+      characterButton.addEventListener("click", cheer);
+      danceButton.addEventListener("click", cheer);
+    </script>
+  </body>
+</html>
