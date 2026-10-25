@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qaz5d.github.io/yaya-sunny-cottage/sitemap.xml
