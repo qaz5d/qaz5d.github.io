@@ -151,6 +151,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         aspect-ratio: 0.82;
         place-items: center;
         margin: 4px 0 -4px;
+        perspective: 900px;
       }
 
       .halo {
@@ -161,6 +162,8 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         border-radius: 50%;
         background: radial-gradient(circle, rgb(255 255 255 / 88%) 0 39%, rgb(214 231 255 / 52%) 68%, transparent 69%);
         box-shadow: 0 28px 64px rgb(91 120 186 / 12%);
+        transform: translate3d(calc(var(--depth-x, 0px) * -.28), calc(var(--depth-y, 0px) * -.28), 0);
+        transition: transform 260ms cubic-bezier(.16, 1, .3, 1);
       }
 
       .orbit {
@@ -169,7 +172,8 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         height: 44%;
         border: 1px solid rgb(117 143 207 / 17%);
         border-radius: 50%;
-        transform: rotate(-13deg);
+        transform: translate3d(calc(var(--depth-x, 0px) * .18), calc(var(--depth-y, 0px) * .18), 0) rotate(-13deg);
+        transition: transform 260ms cubic-bezier(.16, 1, .3, 1);
       }
 
       .orbit::after {
@@ -193,6 +197,9 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         border: 0;
         background: transparent;
         cursor: pointer;
+        transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+        transform-style: preserve-3d;
+        transition: transform 220ms cubic-bezier(.16, 1, .3, 1);
         -webkit-tap-highlight-color: transparent;
       }
 
@@ -201,6 +208,11 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       .dance-button:focus-visible {
         outline: 3px solid #344fb8;
         outline-offset: 5px;
+      }
+
+      .character-button:focus-visible {
+        --tilt-x: -3deg;
+        --tilt-y: 3deg;
       }
 
       .character {
@@ -518,6 +530,14 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       .memory-button[data-color="mint"] { background: #65cdb0; }
       .memory-button[data-color="blue"] { background: #6d8cff; }
 
+      @media (prefers-reduced-motion: reduce) {
+        .character-button,
+        .halo,
+        .orbit {
+          transition-duration: 0.01ms;
+        }
+      }
+
       .memory-start {
         min-height: 42px;
         margin-left: 6px;
@@ -774,7 +794,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         </button>
       </div>
 
-      <p class="message" id="message" aria-live="polite">点一点下面的表情，看看芽芽的心情</p>
+      <p class="message" id="message" aria-live="polite">点一点表情，或轻轻拖动芽芽看看她立体转动</p>
 
       <div class="mood-picker" role="group" aria-label="选择芽芽的表情">
         <button class="mood-button" type="button" data-mood="calm" aria-label="平静" aria-pressed="true">🙂</button>
@@ -833,6 +853,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
     </main>
 
     <script>
+      const characterStage = document.querySelector(".character-stage");
       const character = document.querySelector("#character");
       const characterButton = document.querySelector("#characterButton");
       const danceButton = document.querySelector("#danceButton");
@@ -857,7 +878,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       let memoryState = "idle";
       let memoryTimers = [];
       const moodMessages = {
-        calm: "点一点下面的表情，看看芽芽的心情",
+        calm: "点一点表情，或轻轻拖动芽芽看看她立体转动",
         happy: "芽芽今天超开心！",
         love: "芽芽把爱心送给你",
         wow: "哇！有什么新发现吗？",
@@ -882,6 +903,29 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         flower: "🌼",
         crown: "👑",
       };
+
+      function moveCharacterDepth(event) {
+        if (event.pointerType === "touch" && event.buttons === 0) return;
+        const rect = characterStage.getBoundingClientRect();
+        const horizontal = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
+        const vertical = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
+        characterButton.style.setProperty("--tilt-x", `${horizontal * 8}deg`);
+        characterButton.style.setProperty("--tilt-y", `${vertical * -8}deg`);
+        characterStage.style.setProperty("--depth-x", `${horizontal * 14}px`);
+        characterStage.style.setProperty("--depth-y", `${vertical * 12}px`);
+      }
+
+      function resetCharacterDepth() {
+        characterButton.style.removeProperty("--tilt-x");
+        characterButton.style.removeProperty("--tilt-y");
+        characterStage.style.removeProperty("--depth-x");
+        characterStage.style.removeProperty("--depth-y");
+      }
+
+      characterStage.addEventListener("pointermove", moveCharacterDepth);
+      characterStage.addEventListener("pointerleave", resetCharacterDepth);
+      characterStage.addEventListener("pointerup", resetCharacterDepth);
+      characterStage.addEventListener("pointercancel", resetCharacterDepth);
 
       function setMood(mood, animate = true) {
         character.dataset.mood = mood;
