@@ -188,44 +188,50 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         content: "";
       }
 
-      .character-button {
+      .character-figure {
         position: relative;
         z-index: 1;
+        display: grid;
         width: 90%;
         height: 100%;
-        padding: 0;
-        border: 0;
-        background: transparent;
-        cursor: pointer;
-        transform: perspective(900px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
-        transform-style: preserve-3d;
-        transition: transform 220ms cubic-bezier(.16, 1, .3, 1);
+        place-items: center;
         -webkit-tap-highlight-color: transparent;
       }
 
-      .character-button:focus-visible,
+      .character:focus-visible,
       .mood-button:focus-visible,
       .dance-button:focus-visible {
         outline: 3px solid #344fb8;
         outline-offset: 5px;
       }
 
-      .character-button:focus-visible {
-        --tilt-x: -3deg;
-        --tilt-y: 3deg;
+      .character {
+        display: block;
+        width: 100%;
+        height: 96%;
+        border-radius: 0;
+        background: transparent;
+        filter: drop-shadow(0 18px 15px rgb(67 88 147 / 21%));
+        animation: float 3.4s ease-in-out infinite;
+        transform-origin: 50% 77%;
+        --poster-color: transparent;
+        touch-action: pan-y;
       }
 
-      .character {
+      .character-fallback {
+        position: absolute;
+        z-index: 0;
         display: block;
         width: auto;
         max-width: 88%;
         height: 96%;
-        border-radius: 0;
         object-fit: contain;
-        object-position: center;
         filter: drop-shadow(0 18px 15px rgb(67 88 147 / 21%));
-        animation: float 3.4s ease-in-out infinite;
-        transform-origin: 50% 77%;
+        pointer-events: none;
+      }
+
+      .character-fallback[hidden] {
+        display: none;
       }
 
       .character.is-dancing {
@@ -482,7 +488,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       .memory-button[data-color="blue"] { background: #6d8cff; }
 
       @media (prefers-reduced-motion: reduce) {
-        .character-button,
         .halo,
         .orbit {
           transition-duration: 0.01ms;
@@ -706,11 +711,29 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         <div class="halo" aria-hidden="true"></div>
         <div class="orbit" aria-hidden="true"></div>
         <span class="burst" id="burst" aria-hidden="true">耶！</span>
-        <button class="character-button" id="characterButton" type="button" aria-label="摸摸芽芽的头">
-          <img class="character" id="character" src="assets/yaya-character.png" alt="芽芽的透明背景角色立绘，保留原始表情">
+        <div class="character-figure">
+          <img class="character-fallback" id="characterFallback" src="assets/yaya-character.png" alt="">
+          <model-viewer
+            class="character"
+            id="character"
+            src="assets/yaya-3d.glb"
+            alt="芽芽的三维角色。拖动可旋转查看，点击可互动。"
+            camera-controls
+            auto-rotate
+            auto-rotate-delay="2600"
+            rotation-per-second="12deg"
+            camera-orbit="0deg 75deg 2.5m"
+            min-camera-orbit="auto 35deg 1.6m"
+            max-camera-orbit="auto 125deg 4m"
+            interaction-prompt="none"
+            shadow-intensity="0.85"
+            exposure="1.1"
+            environment-image="neutral"
+            tabindex="0"
+          ></model-viewer>
           <span class="character-cue" id="characterCue" aria-hidden="true"></span>
           <span class="character-accessory" id="characterAccessory" aria-hidden="true" hidden></span>
-        </button>
+        </div>
       </div>
 
       <p class="message" id="message" aria-live="polite">点一点表情，或轻轻拖动芽芽看看她立体转动</p>
@@ -771,10 +794,11 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       <p class="footnote">芽芽 · 你的晴天小伙伴</p>
     </main>
 
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.1.0/dist/model-viewer.min.js"></script>
     <script>
       const characterStage = document.querySelector(".character-stage");
       const character = document.querySelector("#character");
-      const characterButton = document.querySelector("#characterButton");
+      const characterFallback = document.querySelector("#characterFallback");
       const danceButton = document.querySelector("#danceButton");
       const message = document.querySelector("#message");
       const burst = document.querySelector("#burst");
@@ -796,6 +820,8 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       let memoryInputIndex = 0;
       let memoryState = "idle";
       let memoryTimers = [];
+      let characterPointerStart = null;
+      let suppressCharacterClick = false;
       const moodMessages = {
         calm: "点一点表情，或轻轻拖动芽芽看看她立体转动",
         happy: "芽芽今天超开心！",
@@ -828,18 +854,47 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         const rect = characterStage.getBoundingClientRect();
         const horizontal = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
         const vertical = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
-        characterButton.style.setProperty("--tilt-x", `${horizontal * 8}deg`);
-        characterButton.style.setProperty("--tilt-y", `${vertical * -8}deg`);
         characterStage.style.setProperty("--depth-x", `${horizontal * 14}px`);
         characterStage.style.setProperty("--depth-y", `${vertical * 12}px`);
       }
 
       function resetCharacterDepth() {
-        characterButton.style.removeProperty("--tilt-x");
-        characterButton.style.removeProperty("--tilt-y");
         characterStage.style.removeProperty("--depth-x");
         characterStage.style.removeProperty("--depth-y");
       }
+
+      character.addEventListener("load", () => {
+        characterFallback.hidden = true;
+        character.autoRotate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      });
+      window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", (event) => {
+        character.autoRotate = !event.matches;
+      });
+      character.addEventListener("error", () => {
+        characterFallback.hidden = false;
+        message.textContent = "3D 模型暂时没加载出来，先看看芽芽的立绘吧。";
+      });
+      character.addEventListener("pointerdown", (event) => {
+        characterPointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+      });
+      character.addEventListener("pointermove", (event) => {
+        if (!characterPointerStart || characterPointerStart.id !== event.pointerId) return;
+        if (Math.hypot(event.clientX - characterPointerStart.x, event.clientY - characterPointerStart.y) > 8) {
+          suppressCharacterClick = true;
+        }
+      });
+      character.addEventListener("pointerup", () => {
+        characterPointerStart = null;
+        setTimeout(() => { suppressCharacterClick = false; }, 0);
+      });
+      character.addEventListener("pointercancel", () => {
+        characterPointerStart = null;
+        suppressCharacterClick = true;
+        setTimeout(() => { suppressCharacterClick = false; }, 0);
+      });
+      character.addEventListener("click", () => {
+        if (!suppressCharacterClick) cheer();
+      });
 
       characterStage.addEventListener("pointermove", moveCharacterDepth);
       characterStage.addEventListener("pointerleave", resetCharacterDepth);
@@ -1042,7 +1097,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         button.addEventListener("click", () => pressMemoryButton(Number(button.dataset.index)));
       }
 
-      characterButton.addEventListener("click", cheer);
       danceButton.addEventListener("click", cheer);
     </script>
   </body>
