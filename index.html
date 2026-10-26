@@ -252,55 +252,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         animation: mood-sleepy 980ms ease-in-out;
       }
 
-      .character-face {
-        position: absolute;
-        z-index: 2;
-        top: 2%;
-        left: 0;
-        width: 88%;
-        height: 96%;
-        overflow: visible;
-        pointer-events: none;
-        transform-origin: 50% 77%;
-        animation: float 3.4s ease-in-out infinite;
-      }
-
-      .character.is-dancing + .character-face {
-        animation: dance 680ms cubic-bezier(.22, 1, .36, 1);
-      }
-
-      .character.is-eating + .character-face {
-        animation: munch 980ms ease-in-out both;
-      }
-
-      .character.is-mood-happy + .character-face {
-        animation: mood-happy 680ms cubic-bezier(.16, 1, .3, 1);
-      }
-
-      .character.is-mood-love + .character-face {
-        animation: mood-love 820ms cubic-bezier(.16, 1, .3, 1);
-      }
-
-      .character.is-mood-wow + .character-face {
-        animation: mood-wow 600ms cubic-bezier(.16, 1, .3, 1);
-      }
-
-      .character.is-mood-sleepy + .character-face {
-        animation: mood-sleepy 980ms ease-in-out;
-      }
-
-      .face-expression {
-        opacity: 0;
-        transition: opacity 120ms ease;
-      }
-
-      .character-button[data-mood="calm"] .face-expression--calm,
-      .character-button[data-mood="love"] .face-expression--love,
-      .character-button[data-mood="wow"] .face-expression--wow,
-      .character-button[data-mood="sleepy"] .face-expression--sleepy {
-        opacity: 1;
-      }
-
       .character-cue {
         position: absolute;
         z-index: 3;
@@ -755,40 +706,8 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
         <div class="halo" aria-hidden="true"></div>
         <div class="orbit" aria-hidden="true"></div>
         <span class="burst" id="burst" aria-hidden="true">耶！</span>
-        <button class="character-button" id="characterButton" type="button" aria-label="摸摸芽芽的头" data-mood="calm">
-          <img class="character" id="character" src="assets/yaya-character.png" alt="芽芽的透明背景角色立绘">
-          <svg class="character-face" viewBox="0 0 1273 1795" aria-hidden="true" focusable="false">
-            <defs>
-              <radialGradient id="faceSkin">
-                <stop offset="0" stop-color="#fff5f1" />
-                <stop offset=".72" stop-color="#fff0ed" />
-                <stop offset="1" stop-color="#ffe7e4" />
-              </radialGradient>
-            </defs>
-            <g class="face-expression face-expression--calm">
-              <ellipse cx="628" cy="721" rx="53" ry="34" fill="url(#faceSkin)" />
-              <path d="M601 721 Q628 742 655 721" fill="none" stroke="#e56e80" stroke-linecap="round" stroke-width="10" />
-            </g>
-            <g class="face-expression face-expression--love">
-              <path d="M0 13 C-25 -5 -32 19 0 43 C32 19 25 -5 0 13Z" transform="translate(490 596)" fill="#ed3478" stroke="#fff4f5" stroke-width="4" />
-              <path d="M0 13 C-25 -5 -32 19 0 43 C32 19 25 -5 0 13Z" transform="translate(756 593)" fill="#ed3478" stroke="#fff4f5" stroke-width="4" />
-              <circle cx="478" cy="606" r="5" fill="#fff" />
-              <circle cx="744" cy="603" r="5" fill="#fff" />
-            </g>
-            <g class="face-expression face-expression--wow">
-              <ellipse cx="628" cy="721" rx="53" ry="36" fill="url(#faceSkin)" />
-              <ellipse cx="628" cy="720" rx="23" ry="30" fill="#70203f" />
-              <ellipse cx="628" cy="738" rx="12" ry="6" fill="#f2768b" />
-            </g>
-            <g class="face-expression face-expression--sleepy">
-              <ellipse cx="490" cy="620" rx="72" ry="100" fill="url(#faceSkin)" />
-              <ellipse cx="756" cy="618" rx="72" ry="100" fill="url(#faceSkin)" />
-              <path d="M420 568 Q490 620 558 568 M686 566 Q756 618 824 566" fill="none" stroke="#642743" stroke-linecap="round" stroke-width="11" />
-              <path d="M429 576 L416 588 M444 584 L437 597 M548 575 L560 587 M696 574 L684 586 M711 582 L704 595 M814 573 L827 585" fill="none" stroke="#642743" stroke-linecap="round" stroke-width="6" />
-              <ellipse cx="628" cy="721" rx="53" ry="34" fill="url(#faceSkin)" />
-              <path d="M603 722 Q628 740 653 722" fill="none" stroke="#d9657e" stroke-linecap="round" stroke-width="9" />
-            </g>
-          </svg>
+        <button class="character-button" id="characterButton" type="button" aria-label="摸摸芽芽的头">
+          <img class="character" id="character" src="assets/yaya-character.png" alt="芽芽的透明背景角色立绘，保留原始表情">
           <span class="character-cue" id="characterCue" aria-hidden="true"></span>
           <span class="character-accessory" id="characterAccessory" aria-hidden="true" hidden></span>
         </button>
@@ -796,7 +715,7 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
 
       <p class="message" id="message" aria-live="polite">点一点表情，或轻轻拖动芽芽看看她立体转动</p>
 
-      <div class="mood-picker" role="group" aria-label="选择芽芽的表情">
+      <div class="mood-picker" role="group" aria-label="选择芽芽的心情">
         <button class="mood-button" type="button" data-mood="calm" aria-label="平静" aria-pressed="true">🙂</button>
         <button class="mood-button" type="button" data-mood="happy" aria-label="开心" aria-pressed="false">😄</button>
         <button class="mood-button" type="button" data-mood="love" aria-label="喜欢" aria-pressed="false">😍</button>
@@ -928,8 +847,6 @@ FORM: A mascot-centered experience with expressive states, feeding, dress-up, an
       characterStage.addEventListener("pointercancel", resetCharacterDepth);
 
       function setMood(mood, animate = true) {
-        character.dataset.mood = mood;
-        characterButton.dataset.mood = mood;
         clearTimeout(moodTimer);
         character.classList.remove(...moodAnimationClasses);
         const moodAnimation = animate ? moodAnimationByName[mood] : null;
